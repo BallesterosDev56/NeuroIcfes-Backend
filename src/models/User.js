@@ -1,32 +1,46 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
+  displayName: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: function() {
+      return this.provider === 'email';
+    }
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
+  provider: {
+    type: String,
+    required: true,
+    enum: ['email', 'google', 'facebook'],
+    default: 'email'
+  },
   uid: {
     type: String,
     required: true,
     unique: true
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  displayName: {
-    type: String,
-    required: true
+  isEmailVerified: {
+    type: Boolean,
+    default: false
   },
   photoURL: {
     type: String
-  },
-  provider: {
-    type: String,
-    enum: ['email', 'google'],
-    required: true
-  },
-  role: {
-    type: String,
-    enum: ['student', 'admin'],
-    default: 'student'
   },
   isActive: {
     type: Boolean,
@@ -66,10 +80,17 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Middleware to update the updatedAt field before saving
+// Middleware para actualizar updatedAt antes de guardar
 userSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
 });
 
-module.exports = mongoose.model('User', userSchema); 
+// Método para comparar contraseñas
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User; 
