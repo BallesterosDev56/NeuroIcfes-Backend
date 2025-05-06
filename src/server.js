@@ -7,8 +7,6 @@ const config = require('./config');
 // Importar rutas
 const authRoutes = require('./routes/auth');
 const questionRoutes = require('./routes/questions');
-const progressRoutes = require('./routes/progress');
-const chatRoutes = require('./routes/chat');
 
 const app = express();
 
@@ -37,8 +35,6 @@ mongoose.connect(config.MONGODB_URI)
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/questions', questionRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/chat', chatRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {
