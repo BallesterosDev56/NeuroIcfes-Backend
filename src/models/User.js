@@ -1,6 +1,68 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+// Define progress schema
+const progressSchema = new mongoose.Schema({
+  currentStreak: {
+    type: Number,
+    default: 0
+  },
+  longestStreak: {
+    type: Number,
+    default: 0
+  },
+  lastActivity: {
+    type: Date,
+    default: null
+  },
+  subjectProgress: [{
+    subject: {
+      type: String,
+      required: true
+    },
+    totalQuestions: {
+      type: Number,
+      default: 0
+    },
+    correctAnswers: {
+      type: Number,
+      default: 0
+    },
+    correctAnswersStreak: {
+      type: Number,
+      default: 0
+    },
+    averageAccuracy: {
+      type: Number,
+      default: 0
+    },
+    currentDifficulty: {
+      type: String,
+      enum: ['facil', 'medio', 'dificil'],
+      default: 'facil'
+    },
+    questionsAnswered: [String]
+  }],
+  statistics: {
+    totalQuestions: {
+      type: Number,
+      default: 0
+    },
+    correctAnswers: {
+      type: Number,
+      default: 0
+    },
+    averageAccuracy: {
+      type: Number,
+      default: 0
+    },
+    bestSubject: {
+      subject: String,
+      accuracy: Number
+    }
+  }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   displayName: {
     type: String,
@@ -65,6 +127,11 @@ const userSchema = new mongoose.Schema({
     type: Map,
     of: mongoose.Schema.Types.Mixed,
     default: {}
+  },
+  // Add progress field
+  progress: {
+    type: progressSchema,
+    default: () => ({})
   },
   createdAt: {
     type: Date,

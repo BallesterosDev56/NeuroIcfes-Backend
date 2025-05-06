@@ -7,6 +7,10 @@ const config = require('./config');
 // Importar rutas
 const authRoutes = require('./routes/auth');
 const questionRoutes = require('./routes/questions');
+const openaiRoutes = require('./routes/openai');
+
+// Importar servicios
+const ProgressService = require('./services/progressService');
 
 const app = express();
 
@@ -31,10 +35,15 @@ mongoose.connect(config.MONGODB_URI)
     process.exit(1);
   });
 
+// Configurar servicios
+const progressService = new ProgressService();
+app.set('progressService', progressService);
+
 // Rutas
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/questions', questionRoutes);
+app.use('/api/chat/openai', openaiRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {
