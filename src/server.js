@@ -10,6 +10,7 @@ const questionRoutes = require('./routes/questions');
 const openaiRoutes = require('./routes/openai');
 const sharedContentRoutes = require('./routes/sharedContent');
 const progressRoutes = require('./routes/progress');
+const uploadRoutes = require('./routes/upload');
 
 // Importar servicios
 const ProgressService = require('./services/progressService');
@@ -48,6 +49,7 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/chat/openai', openaiRoutes);
 app.use('/api/shared-content', sharedContentRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

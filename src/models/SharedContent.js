@@ -18,6 +18,12 @@ const sharedContentSchema = new mongoose.Schema({
   mediaUrl: {
     type: String
   },
+  imageData: {
+    public_id: String,
+    format: String,
+    width: Number,
+    height: Number
+  },
   imageDescription: {
     type: String,
     trim: true
