@@ -8,6 +8,8 @@ const config = require('./config');
 const authRoutes = require('./routes/auth');
 const questionRoutes = require('./routes/questions');
 const openaiRoutes = require('./routes/openai');
+const sharedContentRoutes = require('./routes/sharedContent');
+const progressRoutes = require('./routes/progress');
 
 // Importar servicios
 const ProgressService = require('./services/progressService');
@@ -44,6 +46,8 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/questions', questionRoutes);
 app.use('/api/chat/openai', openaiRoutes);
+app.use('/api/shared-content', sharedContentRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {

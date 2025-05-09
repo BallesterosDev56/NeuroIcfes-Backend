@@ -164,18 +164,6 @@ router.get('/difficulty/:difficulty', authenticate, async (req, res) => {
   }
 });
 
-// Obtener preguntas por categoría
-router.get('/category/:category', authenticate, async (req, res) => {
-  try {
-    const { category } = req.params;
-    const questions = await Question.find({ category });
-    res.json(questions);
-  } catch (error) {
-    console.error('Error al obtener preguntas por categoría:', error);
-    res.status(500).json({ message: 'Error al obtener preguntas' });
-  }
-});
-
 // Obtener preguntas aleatorias
 router.get('/random/:count', authenticate, async (req, res) => {
   try {

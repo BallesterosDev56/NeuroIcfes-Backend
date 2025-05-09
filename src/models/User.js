@@ -15,6 +15,13 @@ const progressSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  answeredQuestions: [{
+    questionId: String,
+    subject: String,
+    isCorrect: Boolean,
+    answeredAt: Date,
+    timeSpent: Number
+  }],
   subjectProgress: [{
     subject: {
       type: String,

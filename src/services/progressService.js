@@ -12,18 +12,30 @@ class ProgressService {
       if (!user) {
         throw new Error('Usuario no encontrado');
       }
-      return user.progress || {
-        currentStreak: 0,
-        longestStreak: 0,
-        lastActivity: null,
-        subjectProgress: [],
-        statistics: {
-          totalQuestions: 0,
-          correctAnswers: 0,
-          averageAccuracy: 0,
-          bestSubject: null
-        }
-      };
+      
+      // Ensure progress and answeredQuestions array exists
+      if (!user.progress) {
+        user.progress = {
+          currentStreak: 0,
+          longestStreak: 0,
+          lastActivity: null,
+          subjectProgress: [],
+          answeredQuestions: [],
+          statistics: {
+            totalQuestions: 0,
+            correctAnswers: 0,
+            averageAccuracy: 0,
+            bestSubject: null
+          }
+        };
+      }
+      
+      // Ensure the answeredQuestions array exists
+      if (!user.progress.answeredQuestions) {
+        user.progress.answeredQuestions = [];
+      }
+      
+      return user.progress;
     } catch (error) {
       console.error('Error getting user progress:', error);
       throw error;
@@ -57,6 +69,7 @@ class ProgressService {
           longestStreak: 0,
           lastActivity: new Date(),
           subjectProgress: [],
+          answeredQuestions: [],
           statistics: {
             totalQuestions: 0,
             correctAnswers: 0,
@@ -64,6 +77,11 @@ class ProgressService {
             bestSubject: null
           }
         };
+      }
+      
+      // Ensure the answeredQuestions array exists
+      if (!user.progress.answeredQuestions) {
+        user.progress.answeredQuestions = [];
       }
 
       // Update last activity date and check streak
@@ -127,6 +145,26 @@ class ProgressService {
         subjectProgress.questionsAnswered.push(questionId.toString());
       }
       
+      // Add to global answered questions list with metadata
+      const answeredQuestionEntry = {
+        questionId: questionId.toString(),
+        subject,
+        isCorrect,
+        answeredAt: new Date(),
+        timeSpent: timeSpent || 0
+      };
+      
+      // Check if already answered (replace with new data if exists)
+      const existingIndex = user.progress.answeredQuestions.findIndex(
+        q => q.questionId === questionId.toString()
+      );
+      
+      if (existingIndex >= 0) {
+        user.progress.answeredQuestions[existingIndex] = answeredQuestionEntry;
+      } else {
+        user.progress.answeredQuestions.push(answeredQuestionEntry);
+      }
+      
       // Calculate new average accuracy
       subjectProgress.averageAccuracy = (subjectProgress.correctAnswers / subjectProgress.totalQuestions) * 100;
 
@@ -167,6 +205,40 @@ class ProgressService {
       return user.progress;
     } catch (error) {
       console.error('Error updating progress:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reset user's answered questions
+   * @param {string} userId - The user ID
+   * @returns {Promise<Object>} - The updated progress data
+   */
+  async resetProgress(userId) {
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      if (user.progress) {
+        // Clear answered questions
+        user.progress.answeredQuestions = [];
+        
+        // Reset question lists in subject progress
+        if (user.progress.subjectProgress && user.progress.subjectProgress.length > 0) {
+          user.progress.subjectProgress.forEach(subject => {
+            subject.questionsAnswered = [];
+          });
+        }
+        
+        // Save user data
+        await user.save();
+      }
+      
+      return user.progress;
+    } catch (error) {
+      console.error('Error resetting progress:', error);
       throw error;
     }
   }

@@ -29,19 +29,25 @@ const questionSchema = new mongoose.Schema({
     enum: ['facil', 'medio', 'dificil'],
     lowercase: true
   },
-  category: {
+  // Campos nuevos para manejar contenido compartido y multimedia
+  sharedContentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SharedContent',
+    // No es obligatorio para que funcione con preguntas sencillas
+  },
+  questionType: {
     type: String,
-    trim: true
+    enum: ['simple', 'shared-text', 'image-based'],
+    default: 'simple'
+  },
+  position: {
+    type: Number,
+    // Para ordenar preguntas dentro de un mismo contenido compartido
   },
   tags: [{
     type: String,
     trim: true
   }],
-  explanation: {
-    type: String,
-    required: true,
-    trim: true
-  },
   createdAt: {
     type: Date,
     default: Date.now
