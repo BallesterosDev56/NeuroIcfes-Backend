@@ -178,4 +178,15 @@ router.get('/random/:count', authenticate, async (req, res) => {
   }
 });
 
+// Obtener el conteo total de preguntas
+router.get('/count', authenticate, async (req, res) => {
+  try {
+    const count = await Question.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    console.error('Error al contar preguntas:', error);
+    res.status(500).json({ message: 'Error al contar preguntas' });
+  }
+});
+
 module.exports = router; 
